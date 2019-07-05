@@ -22,23 +22,19 @@
           <button @click="() => {setDifficulty(6)}"> Hard (6x6)</button>
       </div>
 
-      <div class="cards-section">
-          <div v-for="outer in difficulty" class="main-card-container">
-              <div v-for="inner in difficulty" class="row">
-                  <div :key="(outer + '') + (inner + '')">
-                        <card
-                        :isHighlighted= "isHighlighted(outer, inner)"
-                        :handleCardClick="handleCardClick"/>
-                    </div>
-
-              </div>
-          </div>
+      <div class="cards-section" v-if="difficulty">
+          <card-container
+          :difficulty="difficulty"
+          :highlightedRow="inner"
+          :handleCardClick="handleCardClick"
+          :highlightedColumn="outer"
+          />
       </div>
   </div>
 </template>
 
 <script>
-import Card from './components/Card.vue';
+import CardContainer from './components/CardContainer.vue';
 
 export default {
   name: 'app',
@@ -48,14 +44,16 @@ export default {
           score: 0,
           difficultyNotSelected: true,
           difficulty: null,
-          started : false
+          started : false,
+          inner: null,
+          outer: null
       }
   },
   mounted() {
 
   },
   components: {
-    Card,
+    CardContainer,
   },
   methods: {
       restart() {
@@ -66,14 +64,27 @@ export default {
           this.difficultyNotSelected = false
           this.startGame()
       },
-      handleCardClick() {
-          this.score += 1
+      handleCardClick(row, column) {
+          if(row === this.inner && column === this.outer) {
+              this.score += 1
+          } else {
+              this.score -= 1
+          }
       },
       startGame() {
          this.started = true
       },
       isHighlighted(inner, outer) {
           return false
+      },
+      generateRandomIndexes() {
+        this.inner = Math.floor(Math.random() * this.difficulty)
+        this.outer = Math.floor(Math.random() * this.difficulty)
+      },
+      setScore() {
+          if(this.score > localStorage.getItem('highScore')) {
+              localStorage.setItem('highScore', this.score)
+          }
       }
   },
   computed: {
@@ -81,11 +92,13 @@ export default {
           if (this.started) {
             self = this
             setTimeout(()=> {
-                self.timeLeft-=1
+                if(self.timeLeft > 0) {
+                    self.timeLeft-=1
+                    self.generateRandomIndexes()
+                } else {
+                    self.setScore()
+                }
             }, 1000)
-
-            let inner = Math.floor(Math.random() * this.difficulty)
-            let outer = Math.floor(Math.random() * this.difficulty)
             return self.timeLeft
           }
 

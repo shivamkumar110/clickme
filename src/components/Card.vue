@@ -15,10 +15,10 @@ export default {
     .card {
         height: 80px;
         width: 80px;
-        cursor: pointer;
         background-color: lightgray;
         margin:10px;
         &.highlighted {
+            cursor: pointer;
             background-color:  #0095da;
         }
     }
