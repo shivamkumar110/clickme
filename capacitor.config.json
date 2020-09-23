@@ -1,0 +1,7 @@
+{
+  "appId": "com.tipytap",
+  "appName": "TipyTap",
+  "bundledWebRuntime": false,
+  "npmClient": "npm",
+  "webDir": "dist"
+}
